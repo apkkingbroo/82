@@ -22,6 +22,8 @@
         .zoom-in { display: block !important; transform: scale(1.5); }
         .cooldown { font-size: 14px; color: yellow; }
         .telegram-button { background: #0088cc; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .predicting { font-size: 20px; font-weight: bold; color: yellow; display: none; animation: blink 0.5s infinite alternate; }
+        @keyframes blink { from { opacity: 1; } to { opacity: 0; } }
     </style>
 </head>
 <body>
@@ -35,6 +37,7 @@
         <div class="dialog-header">
             <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"> APKMODDERKING
         </div>
+        <div id="predictingText" class="predicting">Predicting...</div>
         <div id="resultText" class="result-text"></div>
         <div id="cooldownTimer" class="cooldown"></div>
         <button id="resultButton" class="result-button">Results</button>
@@ -50,6 +53,7 @@
         const resultButton = document.getElementById('resultButton');
         const resultText = document.getElementById('resultText');
         const cooldownTimer = document.getElementById('cooldownTimer');
+        const predictingText = document.getElementById('predictingText');
         let cooldownActive = false;
 
         floatingButton.addEventListener('click', () => {
@@ -64,26 +68,34 @@
 
         resultButton.addEventListener('click', () => {
             if (cooldownActive) return;
-            resultText.textContent = Math.random() < 0.5 ? "Big" : "Small";
-            resultText.classList.remove("zoom-in");
-            resultText.style.display = "block";
-            setTimeout(() => resultText.classList.add("zoom-in"), 50);
 
-            cooldownActive = true;
-            let countdown = 30;
-            cooldownTimer.textContent = `Cooldown: ${countdown}s`;
-            resultButton.disabled = true;
+            // Show "Predicting..." blinking text for 2 seconds
+            predictingText.style.display = "block";
+            resultText.style.display = "none";
 
-            let interval = setInterval(() => {
-                countdown--;
+            setTimeout(() => {
+                predictingText.style.display = "none";
+                resultText.textContent = Math.random() < 0.5 ? "Big" : "Small";
+                resultText.classList.remove("zoom-in");
+                resultText.style.display = "block";
+                setTimeout(() => resultText.classList.add("zoom-in"), 50);
+
+                cooldownActive = true;
+                let countdown = 30;
                 cooldownTimer.textContent = `Cooldown: ${countdown}s`;
-                if (countdown <= 0) {
-                    clearInterval(interval);
-                    cooldownTimer.textContent = "";
-                    resultButton.disabled = false;
-                    cooldownActive = false;
-                }
-            }, 1000);
+                resultButton.disabled = true;
+
+                let interval = setInterval(() => {
+                    countdown--;
+                    cooldownTimer.textContent = `Cooldown: ${countdown}s`;
+                    if (countdown <= 0) {
+                        clearInterval(interval);
+                        cooldownTimer.textContent = "";
+                        resultButton.disabled = false;
+                        cooldownActive = false;
+                    }
+                }, 1000);
+            }, 2000); // Show Big/Small after 2 seconds
         });
     </script>
 
